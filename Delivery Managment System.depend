@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1760960758 source:c:\users\sadee\onedrive\desktop\c program assignment\delivery managment system\manage city.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
