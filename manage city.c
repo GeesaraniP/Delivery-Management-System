@@ -656,7 +656,8 @@ void deliveryCostEstimation() {
 
     char fromCity[30], toCity[30];
     float distance;
-    int weight, choice;
+    int choice4;
+    float weight;
 
     printf("Enter From City: ");
     scanf("%s", fromCity);
@@ -667,17 +668,14 @@ void deliveryCostEstimation() {
     printf("Enter parcel weight (kg): ");
     scanf("%d", &weight);
 
-    printf("\nSelect Vehicle Type:\n");
-    printf("1. Van\n2. Truck\n3. Lorry\nEnter choice: ");
-    scanf("%d", &choice);
+    printf("Select Vehicle Type:");
+    printf("1.Van\n");
+    printf("2.Truck\n");
+    printf("3.Lorry\n");
+    printf("Enter your choice:");
+    scanf("%d",&choice4);
 
-    if (choice < 1 || choice > 3) {
-        printf("Invalid vehicle selection!\n");
-        return;
-    }
-
-    Vehicle v = vehicles[choice - 1];
-
+    Vehicle v = vehicles[choice4 - 1];
 
     printf("\n======================================================\n");
     printf("DELIVERY COST ESTIMATION\n");
@@ -686,7 +684,7 @@ void deliveryCostEstimation() {
     printf("To: %s\n", toCity);
     printf("Minimum Distance: %.2f km\n", distance);
     printf("Vehicle: %s\n", v.name);
-    printf("Weight: %d kg\n", weight);
+    printf("Weight: %.2f kg\n", weight);
     printf("------------------------------------------------------\n");
 
 
