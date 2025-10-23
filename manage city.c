@@ -5,6 +5,7 @@
 #define MAX_CITIES 30
 #define NAME_LENGTH 50
 #define MAX_DELIVERIES 50
+#define FUEL_PRICE 310.00
 
 typedef struct {
 char source[NAME_LENGTH];
@@ -14,6 +15,14 @@ float weight;
 float distance;
 float cost;
 }Delivery;
+
+typedef struct {
+    char name[20];
+    int capacity;
+    float ratePerKm;
+    float avgSpeed;
+    float fuelEfficiency;
+} Vehicle;
 
 void addCity(char cities[MAX_CITIES][NAME_LENGTH], int *count);
 void cityManagement(char cities[MAX_CITIES][NAME_LENGTH], int *count);
@@ -30,6 +39,7 @@ void deliveryRecordMenu(Delivery deliveries[MAX_DELIVERIES],int *deliveryCount);
 void addDeliveryRecord(Delivery deliveries[MAX_DELIVERIES], int *deliveryCount);
 void displayDeliveryRecords(Delivery deliveries[MAX_DELIVERIES], int deliveryCount);
 void findLeastDistanceRoute(int distance[MAX_CITIES][MAX_CITIES], char cities[MAX_CITIES][NAME_LENGTH], int count);
+void deliveryCostEstimation();
 
 
 int main()
@@ -56,7 +66,8 @@ int main()
         printf("4.Delivery Request and Cost,Time,Fuel Calculations\n");
         printf("5.Delivery Records Mangement\n");
         printf("6.Find the Least-Cost Route\n");
-        printf("7.Exit\n");
+        printf("7.To get Delivery Cost Estimate\n");
+        printf("8.Exit\n");
         printf("Enter Your Choice:");
         scanf("%d",&choice);
         switch(choice)
@@ -81,6 +92,9 @@ int main()
             findLeastDistanceRoute(distance,cities,count);
             break;
         case 7:
+             deliveryCostEstimation();
+             break;
+        case 8:
             printf("Exiting the program...\n");
             break;
 
@@ -632,4 +646,72 @@ void findLeastDistanceRoute(int distance[MAX_CITIES][MAX_CITIES], char cities[MA
     }
     printf("\nMinimum Distance: %d km\n", dist[dest - 1]);
     printf("=============================================\n");
+}
+void deliveryCostEstimation() {
+    Vehicle vehicles[3] = {
+        {"Van",   1000, 30, 60, 12},
+        {"Truck", 5000, 40, 50, 6},
+        {"Lorry", 10000, 45, 40, 4}
+    };
+
+    char fromCity[30], toCity[30];
+    float distance;
+    int weight, choice;
+
+    printf("Enter From City: ");
+    scanf("%s", fromCity);
+    printf("Enter To City: ");
+    scanf("%s", toCity);
+    printf("Enter delivery distance (km): ");
+    scanf("%f", &distance);
+    printf("Enter parcel weight (kg): ");
+    scanf("%d", &weight);
+
+    printf("\nSelect Vehicle Type:\n");
+    printf("1. Van\n2. Truck\n3. Lorry\nEnter choice: ");
+    scanf("%d", &choice);
+
+    if (choice < 1 || choice > 3) {
+        printf("Invalid vehicle selection!\n");
+        return;
+    }
+
+    Vehicle v = vehicles[choice - 1];
+
+
+    printf("\n======================================================\n");
+    printf("DELIVERY COST ESTIMATION\n");
+    printf("------------------------------------------------------\n");
+    printf("From: %s\n", fromCity);
+    printf("To: %s\n", toCity);
+    printf("Minimum Distance: %.2f km\n", distance);
+    printf("Vehicle: %s\n", v.name);
+    printf("Weight: %d kg\n", weight);
+    printf("------------------------------------------------------\n");
+
+
+    float baseCost = distance * v.ratePerKm * (1 + (float)weight / v.capacity);
+
+
+    float fuelUsed = distance / v.fuelEfficiency;
+    float fuelCost = fuelUsed * FUEL_PRICE;
+
+
+    float operationalCost = baseCost + fuelCost;
+    float profit = operationalCost * 0.25;
+    float customerCharge = operationalCost + profit;
+
+
+    float estimatedTime = distance / v.avgSpeed;
+
+
+    printf("Base Cost: %.2f × %.2f × (1 + %d/%d) = %.2f LKR\n",
+           distance, v.ratePerKm, weight, v.capacity, baseCost);
+    printf("Fuel Used: %.2f L\n", fuelUsed);
+    printf("Fuel Cost: %.2f LKR\n", fuelCost);
+    printf("Operational Cost: %.2f LKR\n", operationalCost);
+    printf("Profit: %.2f LKR\n", profit);
+    printf("Customer Charge: %.2f LKR\n", customerCharge);
+    printf("Estimated Time: %.2f hours\n", estimatedTime);
+    printf("======================================================\n");
 }
