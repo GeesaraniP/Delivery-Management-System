@@ -252,7 +252,7 @@ void manageDistance(char cities[MAX_CITIES][NAME_LENGTH],int distance[MAX_CITIES
 
 
     do{
-        printf("---Distance Management---\n");
+        printf("===Distance Management===\n");
         printf("1.Input or Edit Distance Between Cities\n");
         printf("2.Display Distance Table\n");
         printf("3.Exit\n");
