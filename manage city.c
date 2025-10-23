@@ -4,6 +4,16 @@
 
 #define MAX_CITIES 30
 #define NAME_LENGTH 50
+#define MAX_DELIVERIES 50
+
+typedef struct {
+char source[NAME_LENGTH];
+char destination[NAME_LENGTH];
+char vehical[50];
+float weight;
+float distance;
+float cost;
+}Delivery;
 
 void addCity(char cities[MAX_CITIES][NAME_LENGTH], int *count);
 void cityManagement(char cities[MAX_CITIES][NAME_LENGTH], int *count);
@@ -16,9 +26,15 @@ void displayDistanceTable(int distance[MAX_CITIES][MAX_CITIES],char cities[MAX_C
 void calculateCost(int D,float W,int R,int S,int E,float F);
 void vehicalMangement();
 void deliveryRequest(int distance[MAX_CITIES][MAX_CITIES], char cities[MAX_CITIES][NAME_LENGTH], int count);
+void deliveryRecordMenu(Delivery deliveries[MAX_DELIVERIES],int *deliveryCount);
+void addDeliveryRecord(Delivery deliveries[MAX_DELIVERIES], int *deliveryCount);
+void displayDeliveryRecords(Delivery deliveries[MAX_DELIVERIES], int deliveryCount);
+
 int main()
 {
     int count=0;
+    int deliveryCount =0;
+    Delivery deliveries[MAX_DELIVERIES];
 
 
     char cities[MAX_CITIES][NAME_LENGTH];
@@ -34,7 +50,8 @@ int main()
         printf("2.Distance Management\n");
         printf("3.Vehicle Management(show vehicle info)\n");
         printf("4.Delivery Request and Cost,Time,Fuel Calculations\n");
-        printf("5.Exit\n");
+        printf("5.Delivery Records Mangement\n");
+        printf("6.Exit\n");
         printf("Enter Your Choice:");
         scanf("%d",&choice);
         switch(choice)
@@ -53,8 +70,12 @@ int main()
            deliveryRequest(distance,cities,count);
             break;
         case 5:
+             deliveryRecordMenu(deliveries, &deliveryCount);
+            break;
+        case 6:
             printf("Exiting the program...\n");
             break;
+
         default:
             printf("Invalid Input!\n");
             break;
@@ -402,3 +423,120 @@ void calculateCost(int D, float W, int R, int S, int E, float F)
     printf("Final Charge to Customer: %.2f LKR\n", customerCharge);
     printf("--------------------------------------\n");
 }
+void deliveryRecordMenu(Delivery Deliveries[MAX_DELIVERIES],int *deliveryCount)
+{
+    int choice3;
+    do{
+        printf("---Delivery Records Management---\n");
+        printf("1.Add Delivery Record\n");
+        printf("2.Display All Delvery Records\n");
+        printf("3.Exit\n");
+        printf("Enter your choice:");
+        scanf("%d",&choice3);
+        while(getchar()!='\n');
+        switch(choice3)
+        {
+        case 1:
+            addDeliveryRecord(Deliveries, deliveryCount);
+            break;
+        case 2:
+            displayDeliveryRecords(Deliveries, *deliveryCount);
+            break;
+        case 3:
+            printf("Exit\n");
+            break;
+        default:
+            printf("Invalid Input!\n");
+        }
+    }while(choice3!=3);
+}
+void addDeliveryRecord(Delivery deliveries[MAX_DELIVERIES],int *deliveryCount)
+{
+
+    if (*deliveryCount >= MAX_DELIVERIES)
+    {
+        printf("Delivery record limit reached (max 50)!\n");
+        return;
+    }
+
+    Delivery newDelivery;
+
+    printf("Enter Source City: ");
+    fgets(newDelivery.source, sizeof(newDelivery.source), stdin);
+    newDelivery.source[strcspn(newDelivery.source, "\n")] = '\0';
+
+    printf("Enter Destination City: ");
+    fgets(newDelivery.destination, sizeof(newDelivery.destination), stdin);
+    newDelivery.destination[strcspn(newDelivery.destination, "\n")] = '\0';
+
+    printf("Enter Vehicle Type (Van/Truck/Lorry): ");
+    fgets(newDelivery.vehical, sizeof(newDelivery.vehical), stdin);
+    newDelivery.vehical[strcspn(newDelivery.vehical, "\n")] = '\0';
+
+    printf("Enter Weight (kg): ");
+    scanf("%f", &newDelivery.weight);
+
+    printf("Enter Distance (km): ");
+    scanf("%f", &newDelivery.distance);
+
+    printf("Enter Total Cost (LKR): ");
+    scanf("%f", &newDelivery.cost);
+
+    deliveries[*deliveryCount] = newDelivery;
+    (*deliveryCount)++;
+
+    printf("Delivery record added successfully!\n");
+}
+void deliveryRecordsMenu(Delivery deliveries[MAX_DELIVERIES], int *deliveryCount)
+{
+    int choice;
+    do {
+        printf("\n=== Delivery Records Management ===\n");
+        printf("1. Add Delivery Record\n");
+        printf("2. Display All Delivery Records\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        while (getchar() != '\n');
+
+        switch(choice)
+        {
+            case 1:
+                addDeliveryRecord(deliveries, deliveryCount);
+                break;
+            case 2:
+                displayDeliveryRecords(deliveries, *deliveryCount);
+                break;
+            case 3:
+                printf("Exiting Delivery Records Management...\n");
+                break;
+            default:
+                printf("Invalid choice!\n");
+        }
+    } while(choice != 3);
+}
+
+
+void displayDeliveryRecords(Delivery deliveries[MAX_DELIVERIES], int deliveryCount)
+{
+    if (deliveryCount == 0)
+    {
+        printf("No delivery records available.\n");
+        return;
+    }
+
+    printf("\n--- All Delivery Records ---\n");
+    for (int i = 0; i < deliveryCount; i++)
+    {
+        printf("\nRecord #%d:\n", i + 1);
+        printf("Source: %s\n", deliveries[i].source);
+        printf("Destination: %s\n", deliveries[i].destination);
+        printf("Vehicle: %s\n", deliveries[i].vehical);
+        printf("Weight: %.2f kg\n", deliveries[i].weight);
+        printf("Distance: %.2f km\n", deliveries[i].distance);
+        printf("Cost: %.2f LKR\n", deliveries[i].cost);
+    }
+}
+
+
+
