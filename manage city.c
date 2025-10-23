@@ -15,7 +15,7 @@ void manageDistance(char cities[MAX_CITIES][NAME_LENGTH], int distance[MAX_CITIE
 void displayDistanceTable(int distance[MAX_CITIES][MAX_CITIES],char cities[MAX_CITIES][NAME_LENGTH],int count);
 void calculateCost(int D,float W,int R,int S,int E,float F);
 void vehicalMangement();
-void deliveryRequest(int distance[MAX_CITIES][MAX_CITIES]);
+void deliveryRequest(int distance[MAX_CITIES][MAX_CITIES], char cities[MAX_CITIES][NAME_LENGTH], int count);
 int main()
 {
     int count=0;
@@ -50,7 +50,7 @@ int main()
            vehicalMangement();
             break;
         case 4:
-           deliveryRequest(distance);
+           deliveryRequest(distance,cities,count);
             break;
         case 5:
             printf("Exiting the program...\n");
@@ -273,7 +273,7 @@ void inputOrEditDistance(int distance[MAX_CITIES][MAX_CITIES],char cities[MAX_CI
 
     printf("Enter second city number:");
     scanf("%d",&c2);
-     while (getchar() != '\n');
+
 
 
     if (c1<1||c1>count||c2<1||c2>count||c1==c2){
@@ -319,76 +319,86 @@ void vehicalMangement()
     printf("Truck\t%d\t\t%d\t\t\t%d\t\t\t%d\n",truck[0],truck[1],truck[2],truck[3]);
     printf("Lorry\t%d\t\t%d\t\t\t%d\t\t\t%d\n",lorry[0],lorry[1],lorry[2],lorry[3]);
 }
-void deliveryRequest(int distance[MAX_CITIES][MAX_CITIES])
+void deliveryRequest(int distance[MAX_CITIES][MAX_CITIES], char cities[MAX_CITIES][NAME_LENGTH], int count)
 {
-    int vehical[3][4]={
-                       {1000,30,60,12},
-                       {5000,40,50,6},
-                       {10000,80,45,4}
-                       };
-
-     int sourceCityIndex,destination,vehicalType;
-     float weight;
-     printf("If city index is n please enter Source City Index and Destination City Index as (n-1).\n");
-     printf("Example:City index is 2  Source City Index is 1.\n");
-
-     printf("Enter Source City Index:",MAX_CITIES-1);
-     scanf("%d",&sourceCityIndex);
-     printf("Enter Destination City Index:",MAX_CITIES-1);
-     scanf("%d",&destination);
-     printf("Enter weigth(kg):");
-     scanf("%f",&weight);
-     printf("Select Vehical Type(1=Van,2=Truck,3=Lorry):");
-     scanf("%d",&vehicalType);
-     if(sourceCityIndex==destination){
-        printf("Source and Destination cannot be same!\n");
+    if (count < 2)
+    {
+        printf("Add at least 2 cities and set distances first!\n");
         return;
-     }
-     if(vehicalType<1||vehicalType>3){
-        printf("Invalid vehical type!\n");
-        return;
-     }
-     int capacity=vehical[vehicalType-1][0];
-     if(weight>capacity){
-        printf("Weight exceeds vehicle capacity(%d kg)\n",capacity);
-        return;
-     }
-     int D=distance[sourceCityIndex][destination];
-     float W=weight;
-     int R=vehical[vehicalType-1][1];
-     int S=vehical[vehicalType-1][2];
-     int E=vehical[vehicalType-1][3];
-     float F=310.0;
-     calculateCost(D, R, S, E, W, F);
-
-}
-void calculateCost(int D,float W,int R,int S,int E,float F)
-{
-
-    float deliveryCost=D*R*(1+(W/10000.0));
-    float time=D/S;
-    float fuelUsed=D/E;
-    float fuelCost=fuelUsed*F;
-    float totalCost=deliveryCost+fuelCost;
-    float profit=deliveryCost*0.25;
-    float customerCharge=totalCost+profit;
-
-    printf("----Delivery Calculation Summary----\n");
-    printf("Distance:%.2fkm\n",D);
-    printf("Weight:%.2f kg\n",W);
-    printf("Delivery Cost:%.2f LKR\n",deliveryCost);
-    printf("Estimated Time:%.2f hours\n",time);
-    printf("Fuel Used:%.2f liters\n",fuelUsed);
-    printf("Total  Operational Cost:%.2f LKR\n",totalCost);
-    printf("Profit(25%%):%.2f LKR\n",profit);
-    printf("Final Charge to Customer:%.2f LKR\n",customerCharge);
-    printf("----------------------------------------------------\n");
-
     }
 
+    int vehicle[3][4] = {
+        {1000, 30, 60, 12},
+        {5000, 40, 50, 6},
+        {10000, 80, 45, 4}};
 
+    displayCities(cities, count);
 
+    int src, dest, type;
+    float weight;
 
+    printf("Enter Source City Number: ");
+    scanf("%d", &src);
+    printf("Enter Destination City Number: ");
+    scanf("%d", &dest);
+    printf("Enter Weight (kg): ");
+    scanf("%f", &weight);
+    printf("Select Vehicle Type (1=Van, 2=Truck, 3=Lorry): ");
+    scanf("%d", &type);
 
+    if (src < 1 || src > count || dest < 1 || dest > count || src == dest)
+    {
+        printf("Invalid city selection!\n");
+        return;
+    }
 
+    if (type < 1 || type > 3)
+    {
+        printf("Invalid vehicle type!\n");
+        return;
+    }
 
+    int D = distance[src - 1][dest - 1];
+    if (D == 0)
+    {
+        printf("Distance between %s and %s is not set yet!\n", cities[src - 1], cities[dest - 1]);
+        return;
+    }
+
+    int cap = vehicle[type - 1][0];
+    if (weight > cap)
+    {
+        printf("Weight exceeds vehicle capacity (%d kg)!\n", cap);
+        return;
+    }
+
+    int R = vehicle[type - 1][1];
+    int S = vehicle[type - 1][2];
+    int E = vehicle[type - 1][3];
+    float F = 310.0; // fuel price
+
+    calculateCost(D, weight, R, S, E, F);
+}
+
+void calculateCost(int D, float W, int R, int S, int E, float F)
+{
+    float deliveryCost = D * R * (1 + (W / 10000.0));
+    float time = (float)D / S;
+    float fuelUsed = (float)D / E;
+    float fuelCost = fuelUsed * F;
+    float totalCost = deliveryCost + fuelCost;
+    float profit = deliveryCost * 0.25;
+    float customerCharge = totalCost + profit;
+
+    printf("\n---- Delivery Calculation Summary ----\n");
+    printf("Distance: %d km\n", D);
+    printf("Weight: %.2f kg\n", W);
+    printf("Delivery Cost: %.2f LKR\n", deliveryCost);
+    printf("Estimated Time: %.2f hours\n", time);
+    printf("Fuel Used: %.2f liters\n", fuelUsed);
+    printf("Fuel Cost: %.2f LKR\n", fuelCost);
+    printf("Total Operational Cost: %.2f LKR\n", totalCost);
+    printf("Profit (25%%): %.2f LKR\n", profit);
+    printf("Final Charge to Customer: %.2f LKR\n", customerCharge);
+    printf("--------------------------------------\n");
+}
