@@ -29,6 +29,8 @@ void deliveryRequest(int distance[MAX_CITIES][MAX_CITIES], char cities[MAX_CITIE
 void deliveryRecordMenu(Delivery deliveries[MAX_DELIVERIES],int *deliveryCount);
 void addDeliveryRecord(Delivery deliveries[MAX_DELIVERIES], int *deliveryCount);
 void displayDeliveryRecords(Delivery deliveries[MAX_DELIVERIES], int deliveryCount);
+void findLeastDistanceRoute(int distance[MAX_CITIES][MAX_CITIES], char cities[MAX_CITIES][NAME_LENGTH], int count);
+
 
 int main()
 {
@@ -42,6 +44,8 @@ int main()
     int D,R,S,E;
     float W,F;
     int choice;
+    int src;
+    int dest;
 
     do
     {
@@ -51,7 +55,8 @@ int main()
         printf("3.Vehicle Management(show vehicle info)\n");
         printf("4.Delivery Request and Cost,Time,Fuel Calculations\n");
         printf("5.Delivery Records Mangement\n");
-        printf("6.Exit\n");
+        printf("6.Find the Least-Cost Route\n");
+        printf("7.Exit\n");
         printf("Enter Your Choice:");
         scanf("%d",&choice);
         switch(choice)
@@ -73,6 +78,9 @@ int main()
              deliveryRecordMenu(deliveries, &deliveryCount);
             break;
         case 6:
+            findLeastDistanceRoute(distance,cities,count);
+            break;
+        case 7:
             printf("Exiting the program...\n");
             break;
 
@@ -378,13 +386,14 @@ void deliveryRequest(int distance[MAX_CITIES][MAX_CITIES], char cities[MAX_CITIE
         printf("Invalid vehicle type!\n");
         return;
     }
-
     int D = distance[src - 1][dest - 1];
     if (D == 0)
-    {
-        printf("Distance between %s and %s is not set yet!\n", cities[src - 1], cities[dest - 1]);
-        return;
-    }
+{
+    printf("Distance between %s and %s is not set yet!\n", cities[src - 1], cities[dest - 1]);
+    return;
+}
+
+
 
     int cap = vehicle[type - 1][0];
     if (weight > cap)
@@ -537,6 +546,90 @@ void displayDeliveryRecords(Delivery deliveries[MAX_DELIVERIES], int deliveryCou
         printf("Cost: %.2f LKR\n", deliveries[i].cost);
     }
 }
+void findLeastDistanceRoute(int distance[MAX_CITIES][MAX_CITIES], char cities[MAX_CITIES][NAME_LENGTH], int count)
+{
+    if (count < 2)
+    {
+        printf("Add at least 2 cities and set distances first!\n");
+        return;
+    }
 
+    int src, dest;
+    displayCities(cities, count);
 
+    printf("Enter Source City Number: ");
+    scanf("%d", &src);
+    printf("Enter Destination City Number: ");
+    scanf("%d", &dest);
 
+    if (src < 1 || src > count || dest < 1 || dest > count || src == dest)
+    {
+        printf("Invalid city selection!\n");
+        return;
+    }
+
+    int dist[MAX_CITIES];
+    int visited[MAX_CITIES];
+    int prev[MAX_CITIES];
+
+    // Initialize arrays
+    for (int i = 0; i < count; i++)
+    {
+        dist[i] = 999999;
+        visited[i] = 0;
+        prev[i] = -1;
+    }
+    dist[src - 1] = 0;
+
+    // Dijkstra’s algorithm
+    for (int i = 0; i < count - 1; i++)
+    {
+        int min = 999999, u = -1;
+        for (int j = 0; j < count; j++)
+        {
+            if (!visited[j] && dist[j] <= min)
+            {
+                min = dist[j];
+                u = j;
+            }
+        }
+        if (u == -1)
+            break;
+
+        visited[u] = 1;
+
+        for (int v = 0; v < count; v++)
+        {
+            if (!visited[v] && distance[u][v] && dist[u] + distance[u][v] < dist[v])
+            {
+                dist[v] = dist[u] + distance[u][v];
+                prev[v] = u;
+            }
+        }
+    }
+
+    if (dist[dest - 1] == 999999)
+    {
+        printf("No valid route found between %s and %s!\n", cities[src - 1], cities[dest - 1]);
+        return;
+    }
+
+    // Print shortest route
+    int path[MAX_CITIES];
+    int index = 0;
+    for (int v = dest - 1; v != -1; v = prev[v])
+        path[index++] = v;
+
+    printf("\n=============================================\n");
+    printf("  SHORTEST ROUTE RESULT\n");
+    printf("=============================================\n");
+    printf("From: %s\nTo: %s\n", cities[src - 1], cities[dest - 1]);
+    printf("Route: ");
+    for (int i = index - 1; i >= 0; i--)
+    {
+        printf("%s", cities[path[i]]);
+        if (i > 0) printf(" -> ");
+    }
+    printf("\nMinimum Distance: %d km\n", dist[dest - 1]);
+    printf("=============================================\n");
+}
