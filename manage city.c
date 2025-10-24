@@ -172,6 +172,11 @@ void addCity(char cities[MAX_CITIES][NAME_LENGTH],int *count)
     printf("Enter new city name: ");
     fgets(newCity, sizeof(newCity), stdin);
     newCity[strcspn(newCity, "\n")] = '\0';
+     if (strlen(newCity) == 0)
+    {
+        printf("City name cannot be empty!\n");
+        return;
+    }
 
 
     for (int i=0; i< *count; i++)
