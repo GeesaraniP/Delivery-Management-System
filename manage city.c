@@ -43,17 +43,22 @@ void displayDeliveryRecords(Delivery deliveries[MAX_DELIVERIES], int deliveryCou
 void findLeastDistanceRoute(int distance[MAX_CITIES][MAX_CITIES], char cities[MAX_CITIES][NAME_LENGTH], int count);
 void deliveryCostEstimation();
 void performanceReports(Delivery deliveries[MAX_DELIVERIES], int deliveryCount);
+void loadDeliveries(Delivery deliveries[MAX_DELIVERIES], int *deliveryCount);
+void saveDeliveries(Delivery deliveries[MAX_DELIVERIES], int deliveryCount);
+void loadRoutes(char cities[MAX_CITIES][NAME_LENGTH], int distance[MAX_CITIES][MAX_CITIES], int *cityCount);
+void saveRoutes(char cities[MAX_CITIES][NAME_LENGTH], int distance[MAX_CITIES][MAX_CITIES], int cityCount);
 
 
 int main()
 {
     int count=0;
     int deliveryCount =0;
-    Delivery deliveries[MAX_DELIVERIES];
-
-
     char cities[MAX_CITIES][NAME_LENGTH];
-    int distance[MAX_CITIES][MAX_CITIES]= {0};
+    int distance[MAX_CITIES][MAX_CITIES] = {0};
+    Delivery deliveries[MAX_DELIVERIES];
+    loadRoutes(cities, distance, &count);
+    loadDeliveries(deliveries, &deliveryCount);
+
     int D,R,S,E;
     float W,F;
     int choice;
@@ -102,6 +107,8 @@ int main()
             performanceReports(deliveries, deliveryCount);
             break;
         case 9:
+            saveRoutes(cities, distance, count);
+            saveDeliveries(deliveries, deliveryCount);
             printf("Exiting the program...\n");
             break;
         default:
@@ -773,4 +780,93 @@ void performanceReports(Delivery deliveries[MAX_DELIVERIES], int deliveryCount) 
     printf("===========================\n");
 
 }
+void saveRoutes(char cities[MAX_CITIES][NAME_LENGTH], int distance[MAX_CITIES][MAX_CITIES], int cityCount) {
+    FILE *file = fopen("routes.txt", "w");
+    if (!file) {
+        printf("Error opening routes.txt for writing!\n");
+        return;
+    }
+
+
+    fprintf(file, "%d\n", cityCount);
+    for (int i = 0; i < cityCount; i++) {
+        fprintf(file, "%s\n", cities[i]);
+    }
+
+
+    for (int i = 0; i < cityCount; i++) {
+        for (int j = 0; j < cityCount; j++) {
+            fprintf(file, "%d ", distance[i][j]);
+        }
+        fprintf(file, "\n");
+    }
+
+    fclose(file);
+    printf("Routes saved successfully to routes.txt\n");
+}
+void loadRoutes(char cities[MAX_CITIES][NAME_LENGTH], int distance[MAX_CITIES][MAX_CITIES], int *cityCount) {
+    FILE *file = fopen("routes.txt", "r");
+    if (!file) {
+        printf("No existing routes.txt found. Starting fresh.\n");
+        return;
+    }
+
+    fscanf(file, "%d\n", cityCount);
+    for (int i = 0; i < *cityCount; i++) {
+        fgets(cities[i], NAME_LENGTH, file);
+        cities[i][strcspn(cities[i], "\n")] = '\0';
+    }
+
+    for (int i = 0; i < *cityCount; i++) {
+        for (int j = 0; j < *cityCount; j++) {
+            fscanf(file, "%d", &distance[i][j]);
+        }
+    }
+
+    fclose(file);
+    printf("Routes loaded successfully from routes.txt\n");
+}
+void saveDeliveries(Delivery deliveries[MAX_DELIVERIES], int deliveryCount) {
+    FILE *file = fopen("deliveries.txt", "w");
+    if (!file) {
+        printf("Error opening deliveries.txt for writing!\n");
+        return;
+    }
+
+    fprintf(file, "%d\n", deliveryCount);
+    for (int i = 0; i < deliveryCount; i++) {
+        fprintf(file, "%s,%s,%s,%.2f,%.2f,%.2f\n",
+                deliveries[i].source,
+                deliveries[i].destination,
+                deliveries[i].vehicle,
+                deliveries[i].weight,
+                deliveries[i].distance,
+                deliveries[i].cost);
+    }
+
+    fclose(file);
+    printf("Deliveries saved successfully to deliveries.txt\n");
+}
+void loadDeliveries(Delivery deliveries[MAX_DELIVERIES], int *deliveryCount) {
+    FILE *file = fopen("deliveries.txt", "r");
+    if (!file) {
+        printf("No existing deliveries.txt found. Starting fresh.\n");
+        return;
+    }
+
+    fscanf(file, "%d\n", deliveryCount);
+    for (int i = 0; i < *deliveryCount; i++) {
+        fscanf(file, "%[^,],%[^,],%[^,],%f,%f,%f\n",
+               deliveries[i].source,
+               deliveries[i].destination,
+               deliveries[i].vehicle,
+               &deliveries[i].weight,
+               &deliveries[i].distance,
+               &deliveries[i].cost);
+    }
+
+    fclose(file);
+    printf("Deliveries loaded successfully from deliveries.txt\n");
+}
+
 
