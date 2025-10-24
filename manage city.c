@@ -11,7 +11,7 @@ typedef struct
 {
     char source[NAME_LENGTH];
     char destination[NAME_LENGTH];
-    char vehical[50];
+    char vehicle[50];
     float weight;
     float distance;
     float cost;
@@ -35,7 +35,7 @@ void inputOrEditDistance(int distance[MAX_CITIES][MAX_CITIES],char cities[MAX_CI
 void manageDistance(char cities[MAX_CITIES][NAME_LENGTH], int distance[MAX_CITIES][MAX_CITIES], int count);
 void displayDistanceTable(int distance[MAX_CITIES][MAX_CITIES],char cities[MAX_CITIES][NAME_LENGTH],int count);
 void calculateCost(int D,float W,int R,int S,int E,float F);
-void vehicalMangement();
+void vehicleManagement();
 void deliveryRequest(int distance[MAX_CITIES][MAX_CITIES], char cities[MAX_CITIES][NAME_LENGTH], int count);
 void deliveryRecordMenu(Delivery deliveries[MAX_DELIVERIES],int *deliveryCount);
 void addDeliveryRecord(Delivery deliveries[MAX_DELIVERIES], int *deliveryCount);
@@ -84,7 +84,7 @@ int main()
 
             break;
         case 3:
-            vehicalMangement();
+            vehicleManagement();
             break;
         case 4:
             deliveryRequest(distance,cities,count);
@@ -365,7 +365,7 @@ void displayDistanceTable(int distance[MAX_CITIES][MAX_CITIES],char cities[MAX_C
         printf("\n");
     }
 }
-void vehicalMangement()
+void vehicleManagement()
 {
     int van[4]= {1000,30,60,12};
     int truck[4]= {5000,40,50,6};
@@ -512,8 +512,8 @@ void addDeliveryRecord(Delivery deliveries[MAX_DELIVERIES],int *deliveryCount)
     newDelivery.destination[strcspn(newDelivery.destination, "\n")] = '\0';
 
     printf("Enter Vehicle Type (Van/Truck/Lorry): ");
-    fgets(newDelivery.vehical, sizeof(newDelivery.vehical), stdin);
-    newDelivery.vehical[strcspn(newDelivery.vehical, "\n")] = '\0';
+    fgets(newDelivery.vehicle, sizeof(newDelivery.vehicle), stdin);
+    newDelivery.vehicle[strcspn(newDelivery.vehicle, "\n")] = '\0';
 
     printf("Enter Weight (kg): ");
     scanf("%f", &newDelivery.weight);
@@ -575,7 +575,7 @@ void displayDeliveryRecords(Delivery deliveries[MAX_DELIVERIES], int deliveryCou
         printf("\nRecord #%d:\n", i + 1);
         printf("Source: %s\n", deliveries[i].source);
         printf("Destination: %s\n", deliveries[i].destination);
-        printf("Vehicle: %s\n", deliveries[i].vehical);
+        printf("Vehicle: %s\n", deliveries[i].vehicle);
         printf("Weight: %.2f kg\n", deliveries[i].weight);
         printf("Distance: %.2f km\n", deliveries[i].distance);
         printf("Cost: %.2f LKR\n", deliveries[i].cost);
@@ -738,7 +738,7 @@ void deliveryCostEstimation()
     printf("======================================================\n");
 }
 void performanceReports(Delivery deliveries[MAX_DELIVERIES], int deliveryCount) {
-    if (deliveryCount == 0) {
+ if (deliveryCount == 0) {
         printf("No deliveries available for reporting.\n");
         return;
     }
@@ -771,5 +771,6 @@ void performanceReports(Delivery deliveries[MAX_DELIVERIES], int deliveryCount) 
     printf("Longest Route: %.2f km\n", maxDistance);
     printf("Shortest Route: %.2f km\n", minDistance);
     printf("===========================\n");
+
 }
 
