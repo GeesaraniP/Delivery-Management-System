@@ -42,6 +42,7 @@ void addDeliveryRecord(Delivery deliveries[MAX_DELIVERIES], int *deliveryCount);
 void displayDeliveryRecords(Delivery deliveries[MAX_DELIVERIES], int deliveryCount);
 void findLeastDistanceRoute(int distance[MAX_CITIES][MAX_CITIES], char cities[MAX_CITIES][NAME_LENGTH], int count);
 void deliveryCostEstimation();
+void performanceReports(Delivery deliveries[MAX_DELIVERIES], int deliveryCount);
 
 
 int main()
@@ -69,7 +70,8 @@ int main()
         printf("5.Delivery Records Mangement\n");
         printf("6.Find the Least-Cost Route\n");
         printf("7.To get Delivery Cost Estimate\n");
-        printf("8.Exit\n");
+        printf("8.Performance Report\n");
+        printf("9.Exit\n");
         printf("Enter Your Choice:");
         scanf("%d",&choice);
         switch(choice)
@@ -97,16 +99,18 @@ int main()
             deliveryCostEstimation();
             break;
         case 8:
+            performanceReports(deliveries, deliveryCount);
+            break;
+        case 9:
             printf("Exiting the program...\n");
             break;
-
         default:
             printf("Invalid Input!\n");
             break;
 
         }
     }
-    while(choice!=5);
+    while(choice!=9);
 
     return 0;
 }
@@ -733,3 +737,39 @@ void deliveryCostEstimation()
     printf("Estimated Time: %.2f hours\n", estimatedTime);
     printf("======================================================\n");
 }
+void performanceReports(Delivery deliveries[MAX_DELIVERIES], int deliveryCount) {
+    if (deliveryCount == 0) {
+        printf("No deliveries available for reporting.\n");
+        return;
+    }
+
+    float totalDistance = 0;
+    float totalRevenue = 0;
+    float totalProfit = 0;
+    float totalTime = 0;
+    float maxDistance = deliveries[0].distance;
+    float minDistance = deliveries[0].distance;
+
+    for (int i = 0; i < deliveryCount; i++) {
+        totalDistance += deliveries[i].distance;
+        totalRevenue += deliveries[i].cost;
+        float profit = deliveries[i].cost * 0.25;
+        totalProfit += profit;
+        float time = deliveries[i].distance / 50.0;
+        totalTime += time;
+
+        if (deliveries[i].distance > maxDistance) maxDistance = deliveries[i].distance;
+        if (deliveries[i].distance < minDistance) minDistance = deliveries[i].distance;
+    }
+
+    printf("\n=== PERFORMANCE REPORT ===\n");
+    printf("Total Deliveries Completed: %d\n", deliveryCount);
+    printf("Total Distance Covered: %.2f km\n", totalDistance);
+    printf("Average Delivery Time: %.2f hours\n", totalTime / deliveryCount);
+    printf("Total Revenue: %.2f LKR\n", totalRevenue);
+    printf("Total Profit: %.2f LKR\n", totalProfit);
+    printf("Longest Route: %.2f km\n", maxDistance);
+    printf("Shortest Route: %.2f km\n", minDistance);
+    printf("===========================\n");
+}
+
