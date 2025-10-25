@@ -854,8 +854,8 @@ void saveDeliveries(Delivery deliveries[MAX_DELIVERIES], int deliveryCount) {
 }
 void loadDeliveries(Delivery deliveries[MAX_DELIVERIES], int *deliveryCount) {
     FILE *file = fopen("deliveries.txt", "r");
-    if (!file) {
-        printf("No existing deliveries.txt found. Starting fresh.\n");
+    if (file==NULL) {
+        printf("No saved deliveries found.Starting new record.\n");
         return;
     }
 
