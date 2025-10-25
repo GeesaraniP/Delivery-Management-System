@@ -448,7 +448,7 @@ void deliveryRequest(int distance[MAX_CITIES][MAX_CITIES], char cities[MAX_CITIE
     int R = vehicle[type - 1][1];
     int S = vehicle[type - 1][2];
     int E = vehicle[type - 1][3];
-    float F = 310.0; // fuel price
+    float F = 310.0;
 
     calculateCost(D, weight, R, S, E, F);
 }
@@ -807,12 +807,12 @@ void saveRoutes(char cities[MAX_CITIES][NAME_LENGTH], int distance[MAX_CITIES][M
     }
 
     fclose(file);
-    printf("Routes saved successfully to routes.txt\n");
+
 }
 void loadRoutes(char cities[MAX_CITIES][NAME_LENGTH], int distance[MAX_CITIES][MAX_CITIES], int *cityCount) {
     FILE *file = fopen("routes.txt", "r");
-    if (!file) {
-        printf("No existing routes.txt found. Starting fresh.\n");
+    if (file==NULL) {
+        printf("No saved routes found.New data will be created.\n");
         return;
     }
 
